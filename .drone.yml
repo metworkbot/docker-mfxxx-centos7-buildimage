@@ -1,0 +1,42 @@
+pipeline:
+  prepare:
+    image: metwork/envtpl-runimage
+    commands: 
+      - ./make_dockerfile.sh "${DRONE_BRANCH}"
+      - cat Dockerfile
+  docker_master:
+    image: plugins/docker
+    secrets: [ docker_username, docker_password ]
+    repo: metwork/mfxxx-centos7-buildimage
+    tags:
+      - latest
+      - ${DRONE_BRANCH}
+    when:
+      branch: master
+      event: push
+  docker_not_master:
+    image: plugins/docker
+    secrets: [ docker_username, docker_password ]
+    repo: metwork/mfxxx-centos7-buildimage
+    tags:
+      - ${DRONE_BRANCH}
+    when:
+      event: push
+      branch: 
+        exclude: [ master ]
+  slack:
+    image: plugins/slack
+    channel: dev
+    username: drone
+    when:
+      status: [ failure ]
+    secrets: [ slack_webhook ]
+  trigger:
+    image: plugins/downstream
+    fork: true
+    repositories:
+      - metwork-framework/mfserv@${DRONE_BRANCH}
+    secrets: [ downstream_token, downstream_server ]
+    when:
+      status: [ success ]
+      event: push
