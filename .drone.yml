@@ -31,12 +31,12 @@ pipeline:
     when:
       status: [ failure ]
     secrets: [ slack_webhook ]
-  trigger:
-    image: plugins/downstream
-    fork: true
-    repositories:
-      - metwork-framework/mfserv@${DRONE_BRANCH}
-    secrets: [ downstream_token, downstream_server ]
-    when:
-      status: [ success ]
-      event: push
+#  trigger:
+#    image: plugins/downstream
+#    fork: true
+#    repositories:
+#      - metwork-framework/mfserv@${DRONE_BRANCH}
+#    secrets: [ downstream_token, downstream_server ]
+#    when:
+#      status: [ success ]
+#      event: push
