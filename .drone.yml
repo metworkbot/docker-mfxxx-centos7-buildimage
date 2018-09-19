@@ -1,8 +1,3 @@
-docker_common: &docker_common
-  image: plugins/docker
-  secrets: [ docker_username, docker_password ]
-  repo: metwork/mfxxx-centos7-buildimage
-  
 trigger_common: &trigger_common
   image: plugins/downstream
   fork: true
@@ -12,44 +7,23 @@ trigger_common: &trigger_common
   
 
 pipeline:
-  docker_master:
-    <<: *docker_common
-    build_args:
-      - BRANCH=master
-    tags:
-      - latest
-      - master
+  docker:
+    image: metwork/drone-docker-specific-image:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root:/root
+    commands:
+      - if test "${DRONE_BRANCH}" = "master"; then
+          docker build -t metwork/mfxxx-centos7-buildimage:master -t metwork/mfxxx-centos7-buildimage:latest --build-arg BRANCH=master --build-arg CACHEBUST=${DRONE_BUILD_NUMBER} .;
+        elif test "${DRONE_BRANCH}" = "integration"; then
+          docker build -t metwork/mfxxx-centos7-buildimage:integration --build-arg BRANCH=integration --build-arg CACHEBUST=${DRONE_BUILD_NUMBER} .;
+        else
+          docker build -t metwork/mfxxx-centos7-buildimage:${DRONE_BRANCH} --build-arg BRANCH=master --build-arg CACHEBUST=${DRONE_BUILD_NUMBER} .;
+        fi
+      - docker push metwork/mfxxx-centos7-buildimage:${DRONE_BRANCH}
+      - if test "${DRONE_BRANCH}" = "master"; then docker push metwork/mfxxx-centos7-buildimage:latest; fi
     when:
-      branch: master
-      event: push
-  docker_integration:
-    <<: *docker_common
-    build_args:
-      - BRANCH=integration
-    tags:
-      - integration
-    when:
-      branch: integration
-      event: push
-  docker_other:
-    <<: *docker_common
-    build_args:
-      - BRANCH=master
-    tags:
-      - ${DRONE_BRANCH}
-    when:
-      event: push
-      branch:
-        exclude: [ master, integration ]
-  slack:
-    image: plugins/slack
-    channel: dev
-    username: drone
-    secrets: [ slack_webhook ]
-    when:
-      status: [ failure ]
-      event: push
-      branch: [ master, integration ]
+       event: push 
   trigger_master:
     <<: *trigger_common
     repositories:
@@ -65,4 +39,4 @@ pipeline:
     when:
       status: [ success ]
       event: push
-      branch: integration
+branch: integration
