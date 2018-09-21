@@ -28,6 +28,7 @@ pipeline:
     <<: *trigger_common
     repositories:
       - metwork-framework/mfserv@master
+      - metwork-framework/mfdata@master
     when:
       status: [ success ]
       event: push
@@ -36,6 +37,7 @@ pipeline:
     <<: *trigger_common
     repositories:
       - metwork-framework/mfserv@integration
+      - metwork-framework/mfdata@integration
     when:
       status: [ success ]
       event: push
