@@ -29,6 +29,7 @@ pipeline:
     repositories:
       - metwork-framework/mfserv@master
       - metwork-framework/mfdata@master
+      - metwork-framework/mfbase@master
     when:
       status: [ success ]
       event: push
@@ -38,6 +39,7 @@ pipeline:
     repositories:
       - metwork-framework/mfserv@integration
       - metwork-framework/mfdata@integration
+      - metwork-framework/mfbase@integration
     when:
       status: [ success ]
       event: push
