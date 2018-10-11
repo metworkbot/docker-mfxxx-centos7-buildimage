@@ -41,6 +41,7 @@ pipeline:
       - metwork-framework/mfdata@master
       - metwork-framework/mfbase@master
       - metwork-framework/mfadmin@master
+      - metwork-framework/mfsysmon@master
     when:
       status: success
       event: push
@@ -52,6 +53,7 @@ pipeline:
       - metwork-framework/mfdata@integration
       - metwork-framework/mfbase@integration
       - metwork-framework/mfadmin@integration
+      - metwork-framework/mfsysmon@integration
     when:
       status: success
       event: push
